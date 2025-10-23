@@ -1,40 +1,51 @@
-# Базовый CUDA образ
+# syntax=docker/dockerfile:1.4
+
 FROM nvidia/cuda:12.1.1-base-ubuntu22.04
 
-# Системные зависимости
-RUN apt-get update && apt-get install -y \
-  python3 python3-pip git wget curl unzip ffmpeg \
-  portaudio19-dev \
+ENV DEBIAN_FRONTEND=noninteractive
+
+# ===============================
+# 1. Системные зависимости
+# ===============================
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  python3 python3-pip git wget curl unzip ffmpeg portaudio19-dev \
   && rm -rf /var/lib/apt/lists/*
 
-# Обновляем pip
-RUN python3 -m pip install --upgrade pip
-
-# PyTorch с поддержкой CUDA
-RUN pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
-
-# Устанавливаем дополнительные зависимости
-RUN pip install gradio ebooklib beautifulsoup4
-
-# Клонируем Auralis
-RUN git clone https://github.com/astramind-ai/Auralis.git /app/Auralis
-
-# Устанавливаем пакет Auralis в editable-режиме
-WORKDIR /app/Auralis
-RUN pip install -e .
-
-# Копируем актуальный gradio_example.py из проекта (если ты используешь свой вариант)
 WORKDIR /app
-COPY gradio_app.py /app/Auralis/examples/gradio_app.py
 
-# Томы и порт
+# ===============================
+# 2. Установка Python-зависимостей
+# ===============================
+COPY requirements.txt /tmp/requirements.txt
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+  python3 -m pip install --upgrade pip setuptools wheel && \
+  python3 -m pip install --no-cache-dir --prefer-binary \
+  --extra-index-url https://download.pytorch.org/whl/cu121 \
+  -r /tmp/requirements.txt
+
+# ===============================
+# 3. Установка Auralis
+# ===============================
+RUN --mount=type=cache,target=/root/.cache/pip \
+  python3 -m pip install --no-cache-dir git+https://github.com/astramind-ai/Auralis.git@main#egg=Auralis
+
+# ===============================
+# 4. Копирование приложения
+# ===============================
+COPY gradio_app.py /app/gradio_app.py
+
+# ===============================
+# 5. Томы, порты и окружение
+# ===============================
 VOLUME ["/app/models", "/app/data"]
 EXPOSE 7860
 
-# Настройки окружения
 ENV NVIDIA_VISIBLE_DEVICES=all
 ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility
 ENV HUGGINGFACE_TOKEN=""
 
-# Запуск Gradio-приложения
-CMD ["python3", "/app/Auralis/examples/gradio_app.py"]
+# ===============================
+# 6. Команда запуска
+# ===============================
+CMD ["python3", "/app/gradio_app.py"]
