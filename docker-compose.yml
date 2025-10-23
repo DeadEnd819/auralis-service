@@ -1,0 +1,14 @@
+services:
+  auralis:
+    build: .
+    container_name: auralis-service
+    ports:
+      - "7860:7860"  # Gradio
+    volumes:
+      - /home/user_alexey/project/pet/auralis-service/models:/app/models
+      - /home/user_alexey/project/pet/auralis-service/data:/app/data
+    runtime: nvidia
+    environment:
+      - HUGGINGFACE_HUB_TOKEN=${HUGGINGFACE_HUB_TOKEN}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility
