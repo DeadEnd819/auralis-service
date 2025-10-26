@@ -140,11 +140,11 @@ def build_gradio_ui():
                   language = gr.Dropdown(label="Target Language", choices=[
                       "en", "es", "fr", "de", "it", "pt", "pl", "tr", "ru",
                       "nl", "cs", "ar", "zh-cn", "hu", "ko", "ja", "hi", "auto",
-                  ], value="auto")
-              generate_button = gr.Button("Generate Speech")
+                  ], value="ru")
             with gr.Column():
                 audio_output = gr.Audio(label="Generated Audio")
                 log_output = gr.Text(label="Log Output")
+                generate_button = gr.Button("Generate Speech")
 
           generate_button.click(
             process_text_and_generate,
@@ -167,11 +167,11 @@ def build_gradio_ui():
                   language_file = gr.Dropdown(label="Target Language", choices=[
                       "en", "es", "fr", "de", "it", "pt", "pl", "tr", "ru",
                       "nl", "cs", "ar", "zh-cn", "hu", "ko", "ja", "hi", "auto",
-                  ], value="auto")
-              generate_button_file = gr.Button("Generate Speech from File")
+                  ], value="ru")
             with gr.Column():
                 audio_output_file = gr.Audio(label="Generated Audio")
                 log_output_file = gr.Text(label="Log Output")
+                generate_button_file = gr.Button("Generate Speech from File")
 
           def process_file_and_generate(file_input, ref_audio_files_file, speed_file, enhance_speech_file, temperature_file, top_p_file, top_k_file, repetition_penalty_file, language_file):
               if file_input:
@@ -210,7 +210,7 @@ def build_gradio_ui():
                   language_mic = gr.Dropdown(label="Target Language", choices=[
                       "en", "es", "fr", "de", "it", "pt", "pl", "tr", "ru",
                       "nl", "cs", "ar", "zh-cn", "hu", "ko", "ja", "hi", "auto",
-                  ], value="auto")
+                  ], value="ru")
               generate_button_mic = gr.Button("Generate Speech")
             with gr.Column():
                 audio_output_mic = gr.Audio(label="Generated Audio")
